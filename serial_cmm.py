@@ -4,6 +4,14 @@ import serial.tools.list_ports
 import time
 import threading
 
+def SER_Get_available_com_name():
+    plist = list(serial.tools.list_ports.comports())
+    name_list = []
+    for list_ in plist:
+        available_com = list_[0]
+        name_list.append(available_com)
+
+    return name_list
 
 class MyFrame(wx.Frame):
 
