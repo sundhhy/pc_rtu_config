@@ -16,7 +16,43 @@ def SER_Get_available_com_name():
 class MyFrame(wx.Frame):
 
     def __init__(self,parent):
-        print("MyFrame __init__")
+
+
+
+
+        wx.Frame.__init__(self, parent, -1, 'EBB COM', size=(500, 500))  # 窗口标题栏和大小
+        #panel = wx.Panel(self)
+
+        list_com_name = SER_Get_available_com_name()
+        list_baud = ['300', '600', '1200', '2400', '4800', '9600', '19200', '38400'
+            , '43000', '56000', '57600', '115200']
+
+        self.baudratelistctr = wx.Choice(self, -1, choices=list_baud)
+        #self.Bind(wx.EVT_CHOICE, self.OnbaudrateCH, self.baudratelistctr)  # 波特率下拉列表响应函数
+        self.baudratelistctr.SetSelection(11)
+
+        self.comlistctr = wx.Choice(self, -1, choices=list_com_name)
+        #self.Bind(wx.EVT_CHOICE, self.OncomlistCH, self.comlistctr)  # com下拉列表响应函数
+        self.comlistctr.SetSelection(0)
+
+        self.switch_btn = wx.Button(self, -1, u'打开')  # 发送按钮
+
+        sizer = wx.GridBagSizer(4, 4)
+        sizer.Add(self.comlistctr, (0, 0), wx.DefaultSpan, wx.EXPAND)
+        sizer.Add(self.baudratelistctr, (1, 0), wx.DefaultSpan, wx.EXPAND)
+        sizer.Add(self.switch_btn, (2, 0), wx.DefaultSpan, wx.EXPAND)
+
+        #sizer.AddGrowableRow(2)
+        #sizer.AddGrowableCol(2)
+        self.SetSizerAndFit(sizer)
+        self.Centre()
+
+        self.com = None
+        t = threading.Timer(0.1, self.myreceive)
+        t.start()
+
+    '''
+     print("MyFrame __init__")
         plist = list(serial.tools.list_ports.comports())
         print(type(plist))
         print(plist)
@@ -73,23 +109,35 @@ class MyFrame(wx.Frame):
         t.start()
         self.Centre()
         global mycom
-        
+    
         try:  
             mycom= serial.Serial(ComNum,BaudRate,timeout=1)
                 
         except:
             wx.MessageBox('open com fail','error')
             return None
+    
+    '''
+
+        
+
         
         
     def myreceive(self):
+
+        if not self.com:
+            time.sleep(1)
+            t = threading.Timer(0.1, self.myreceive)
+            t.start()
+            return
+
         try:
-            n=mycom.inWaiting()
+            n=self.com.inWaiting()
             print(n)
         except:
             return None
         if n!=0:
-            str1=mycom.read(n)
+            str1=self.com.read(n)
             print(str1)
             self.recctr.Value=str1
         t = threading.Timer(0.1,self.myreceive)

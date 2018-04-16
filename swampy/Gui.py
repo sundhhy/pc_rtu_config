@@ -258,6 +258,7 @@ class Gui(tkinter.Tk):
 
     def mb(self, **options):
         """Makes a menubutton"""
+        print(options)
         underride(options, relief=tkinter.RAISED)
         mb = self.widget(tkinter.Menubutton, **options)
         mb.menu = tkinter.Menu(mb, tearoff=False)

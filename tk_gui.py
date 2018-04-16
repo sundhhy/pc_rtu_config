@@ -68,6 +68,8 @@ class Rtu_gui(TurtleWorld):
     def setup(self):
         """create the GUI"""
         ava_list_name = SER_Get_available_com_name()
+        ava_seq = [ str(i) for i in range(len(ava_list_name))]
+        com_opts = dict(zip(ava_seq, ava_list_name))
         self.row()
 
         self.canvas = self.ca(width=400, height=400, bg='white')
@@ -77,12 +79,15 @@ class Rtu_gui(TurtleWorld):
 
         # buttons
         self.gr(cols=2)
-        self.bu(text='串口', command=self.canvas.dump)
-        self.bu(text='Quit', command=self.quit)
-        self.bu(text='Make Turtle', command=self.make_turtle)
-        self.bu(text='Clear', command=self.clear)
-        self.endgr()
-
+        #self.bu(text='串口', command=self.canvas.dump)
+        #self.bu(text='Quit', command=self.quit)
+        #self.bu(text='Make Turtle', command=self.make_turtle)
+        #self.bu(text='Clear', command=self.clear)
+        #self.endgr()
+        print(com_opts)
+        fuck = 1
+        eat = 2
+        self.mb(fuck='you', eat='shit')
 
         # run file
         self.row([0,1], pady=30)
