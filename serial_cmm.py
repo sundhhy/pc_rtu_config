@@ -20,30 +20,53 @@ class MyFrame(wx.Frame):
 
 
 
-        wx.Frame.__init__(self, parent, -1, 'EBB COM', size=(500, 500))  # 窗口标题栏和大小
-        #panel = wx.Panel(self)
+        wx.Frame.__init__(self, parent, -1, 'EBB COM', size=(1600, 1600))  # 窗口标题栏和大小
+
 
         list_com_name = SER_Get_available_com_name()
         list_baud = ['300', '600', '1200', '2400', '4800', '9600', '19200', '38400'
             , '43000', '56000', '57600', '115200']
 
+
+
+        #串口操作的部分
+
         self.baudratelistctr = wx.Choice(self, -1, choices=list_baud)
         #self.Bind(wx.EVT_CHOICE, self.OnbaudrateCH, self.baudratelistctr)  # 波特率下拉列表响应函数
         self.baudratelistctr.SetSelection(11)
-
         self.comlistctr = wx.Choice(self, -1, choices=list_com_name)
         #self.Bind(wx.EVT_CHOICE, self.OncomlistCH, self.comlistctr)  # com下拉列表响应函数
         self.comlistctr.SetSelection(0)
-
         self.switch_btn = wx.Button(self, -1, u'打开')  # 发送按钮
 
-        sizer = wx.GridBagSizer(4, 4)
-        sizer.Add(self.comlistctr, (0, 0), wx.DefaultSpan, wx.EXPAND)
-        sizer.Add(self.baudratelistctr, (1, 0), wx.DefaultSpan, wx.EXPAND)
-        sizer.Add(self.switch_btn, (2, 0), wx.DefaultSpan, wx.EXPAND)
+        sizer_serial = wx.BoxSizer(wx.VERTICAL)
+        sizer_serial.Add(self.comlistctr, 1, wx.EXPAND)       #wx.GROW, wx.EXPAND or wx.SHAPED
+        sizer_serial.Add( self.baudratelistctr, 1, wx.EXPAND)
+        sizer_serial.Add(self.switch_btn, 1, wx.EXPAND)
 
-        #sizer.AddGrowableRow(2)
-        #sizer.AddGrowableCol(2)
+
+        #数据发送部分
+        self.send_btn = wx.Button(self, -1, u'发送')  # 发送按钮
+        self.sendctr = wx.TextCtrl(self, style=wx.TE_MULTILINE)
+        sizer_send = wx.BoxSizer(wx.HORIZONTAL)
+        sizer_send.Add(self.send_btn, 0, wx.EXPAND)
+        sizer_send.Add(self.sendctr, 1, wx.GROW)
+
+        #数据接收显示
+        self.recctr = wx.TextCtrl(self, style=wx.TE_MULTILINE | wx.TE_CENTER)
+
+        sizer = wx.GridBagSizer(1, 4)
+        sizer.Add(sizer_serial, (0, 0), wx.DefaultSpan, wx.ALIGN_LEFT)
+        sizer.Add(self.recctr, (0, 1), wx.DefaultSpan, wx.EXPAND)
+
+        sizer.Add(sizer_send, (1, 1), (2,1), wx.GROW)
+
+
+        sizer.AddGrowableRow(0)
+        sizer.AddGrowableCol(1)
+
+        #sizer.AddGrowableRow(1)
+        #sizer.AddGrowableCol(1)
         self.SetSizerAndFit(sizer)
         self.Centre()
 
@@ -180,7 +203,7 @@ class MyApp(wx.App): #自定义应用程序对象
     def OnExit(self):
         print("MyApp OnExit")
         
-        mycom.close()
+        #mycom.close()
         
         time.sleep(2)        
 
