@@ -4,6 +4,7 @@ import serial.tools.list_ports
 import time
 import threading
 
+
 def SER_Get_available_com_name():
     plist = list(serial.tools.list_ports.comports())
     name_list = []
@@ -13,12 +14,29 @@ def SER_Get_available_com_name():
 
     return name_list
 
+class serial_comm():
+    serial_instance = None
+
+    def open_ser(self, com, baud):
+        print(com)
+        try:
+            serial_instance = serial.Serial(com, baud, timeout=1)
+        except:
+            serial_instance = None
+
+            raise
+
+    def close_ser(self, com):
+        serial_instance.close()
+        return
+
+
 class MyFrame(wx.Frame):
 
-    def __init__(self,parent):
+    def __init__(self,parent, serial_comm):
 
-
-
+        self.ser_state = 0
+        self.com = serial_comm
 
         wx.Frame.__init__(self, parent, -1, 'EBB COM', size=(1600, 1600))  # 窗口标题栏和大小
 
@@ -44,6 +62,7 @@ class MyFrame(wx.Frame):
         sizer_serial.Add( self.baudratelistctr, 1, wx.EXPAND)
         sizer_serial.Add(self.switch_btn, 1, wx.EXPAND)
 
+        self.Bind(wx.EVT_BUTTON, self.switch_btn_click, self.switch_btn)
 
         #数据发送部分
         self.send_btn = wx.Button(self, -1, u'发送')  # 发送按钮
@@ -51,6 +70,8 @@ class MyFrame(wx.Frame):
         sizer_send = wx.BoxSizer(wx.HORIZONTAL)
         sizer_send.Add(self.send_btn, 0, wx.EXPAND)
         sizer_send.Add(self.sendctr, 1, wx.GROW)
+
+
 
         #数据接收显示
         self.recctr = wx.TextCtrl(self, style=wx.TE_MULTILINE | wx.TE_CENTER)
@@ -70,25 +91,12 @@ class MyFrame(wx.Frame):
         self.SetSizerAndFit(sizer)
         self.Centre()
 
-        self.com = None
         t = threading.Timer(0.1, self.myreceive)
         t.start()
 
     '''
      print("MyFrame __init__")
-        plist = list(serial.tools.list_ports.comports())
-        print(type(plist))
-        print(plist)
-        if len(plist) <= 0:
-            print("没有发现端口!")
-        else:
-            plist_0 = list(plist[0])
-            serialName = plist_0[0]
-            #serialFd = serial.Serial(serialName, 9600, timeout=60)
-            print("可用端口名>>>", serialName)
-
-        wx.Frame.__init__(self,parent,-1,'EBB COM',size=(500,500))#窗口标题栏和大小
-
+       
         panel=wx.Panel(self)
         sizer=wx.BoxSizer(wx.VERTICAL)
         panel.SetSizer(sizer)
@@ -142,10 +150,32 @@ class MyFrame(wx.Frame):
     
     '''
 
-        
+    def switch_btn_click(self, event):
+        # 打开串口
+        # 打开按钮的文字替换成关闭
+        if self.ser_state == 0:
+            index = self.comlistctr.GetSelection()
+            ComNum = self.comlistctr.GetString(index)  # 获取com口
+            index = self.baudratelistctr.GetSelection()
+            BaudRate = self.baudratelistctr.GetString(index)  # 获取波特率
 
-        
-        
+            try:
+                self.com.open_ser(ComNum, BaudRate)
+                self.ser_state = 1
+                event.GetEventObject().SetLabel("关闭")
+            except:
+                wx.MessageBox('open com fail', 'error')
+
+        else:
+            try:
+                self.com.close_ser(ComNum)
+                self.ser_state = 0
+                event.GetEventObject().SetLabel("打开")
+            except:
+                wx.MessageBox('close com fail', 'error')
+
+
+
     def myreceive(self):
 
         if not self.com:
@@ -191,17 +221,18 @@ class MyFrame(wx.Frame):
         n=mycom.write(bytes(value, encoding = "utf8") )
 
 
-class MyApp(wx.App): #自定义应用程序对象
-
+class main_app(wx.App): #自定义应用程序对象
+    ser = serial_comm()
     def OnInit(self):
-        print("MyApp OnInit")
-        self.frame = MyFrame(None)
+        print("main_app OnInit")
+        print(type(self.ser))
+        self.frame = MyFrame(None, self.ser)
         id=self.frame.GetId()
         print("Frame ID:",id)
         self.frame.Show(True)
         return True
     def OnExit(self):
-        print("MyApp OnExit")
+        print("main_app OnExit")
         
         #mycom.close()
         
@@ -212,7 +243,7 @@ class MyApp(wx.App): #自定义应用程序对象
 if __name__ == '__main__': 
     print("Main start")
     
-    app = MyApp() #使用从wx.App继承的子类
+    app = main_app() #使用从wx.App继承的子类
     print("Before MainLoop")
     app.MainLoop()
     print("After MainLoop")
