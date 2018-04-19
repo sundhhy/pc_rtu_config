@@ -208,13 +208,13 @@ class SerialFrame(SerialFrameUI):
 		self.serialThread = SerialThread(self.Ser)
 		#create a pubsub receiver
 		#sdh
-		#pub().subscribe(self.on_txtMain_update,'update')
+		pub.subscribe(self.on_txtMain_update,'update')
         
 	def on_txtMain_update(self, msg):
-		self.m_txtMain.AppendText(msg.data)
+		self.m_txtMain.AppendText('[rx]' + msg + '\n')
 
 	def on_btnSend_clicked( self, event ):
-		self.Ser.write(self.m_txtInput.GetValue())
+		self.Ser.write(bytes(self.m_txtInput.GetValue(), encoding = "utf8") )
 
 	def on_btnClear_clicked( self, event ):
 		self.m_txtMain.Clear()
@@ -246,16 +246,17 @@ class SerialFrame(SerialFrameUI):
 				self.Ser.bytesize = int(self.m_cmbData.GetValue())
 				self.Ser.stopbits = int(self.m_cmbStop.GetValue())
 				self.Ser.open()
+				self.m_btnOpen.SetLabel(u'关闭串口')
 			except Exception as e:
 				print('COMM Open Fail!!',e)
 		else:
-			self.m_btnOpen.SetLabel(u'关闭串口')
+			self.m_btnOpen.SetLabel(u'打开串口')
 			self.m_imgStat.SetBitmap(Img_inopening.getBitmap())
 		#else:
 			self.Ser.close()
 			while self.Ser.isOpen(): pass
 
-		self.m_btnOpen.SetLabel(u'打开串口')
+
 		self.m_imgStat.SetBitmap(Img_inclosing.getBitmap())
 
 
@@ -270,20 +271,22 @@ import threading
 
 
 class SerialThread(threading.Thread):
-    def __init__(self,Ser):
-        super(SerialThread,self).__init__()
-        
-        self.Ser=Ser
-        
-        self.start()
-    
-    def run(self):
-        while True:            
-            if self.Ser.isOpen() and self.Ser.inWaiting():
-                text = self.Ser.read(self.Ser.inWaiting())
-                wx.CallAfter(pub().sendMessage('update',text))
-                
-            time.sleep(0.01)
+	def __init__(self,Ser):
+		super(SerialThread,self).__init__()
+
+		self.Ser=Ser
+
+		self.start()
+
+	def run(self):
+		while True:
+			if self.Ser.isOpen() and self.Ser.inWaiting():
+				text = self.Ser.read(self.Ser.inWaiting()).decode()
+				print(text)
+				#wx.CallAfter(pub.sendMessage('update',msg=text))
+				pub.sendMessage('update', msg=text)
+
+		time.sleep(0.01)
                             
 
 
