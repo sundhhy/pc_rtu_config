@@ -94,61 +94,7 @@ class MyFrame(wx.Frame):
         t = threading.Timer(0.1, self.myreceive)
         t.start()
 
-    '''
-     print("MyFrame __init__")
-       
-        panel=wx.Panel(self)
-        sizer=wx.BoxSizer(wx.VERTICAL)
-        panel.SetSizer(sizer)
 
-        self.sendtxt=wx.StaticText(panel,-1,u'发送',(20,50),(50,15))#发送静态文本框 
-        self.rectxt=wx.StaticText(panel,-1,u'接收',(20,200),(50,15))#接收静态文本框
-        self.baudratetxt=wx.StaticText(panel,-1,u'波特率',(20,320),(50,15))#波特率静态文本框
-        self.comtxt=wx.StaticText(panel,-1,'com',(20,350),(50,15))#com口静态文本框
-        baudratelist=['300','600','1200','2400','4800','9600','19200','38400'
-                     ,'43000','56000','57600','115200']
-
-        comlist = []
-        for list_ in plist:
-            available_com = list_[0]
-            comlist.append(available_com)
-
-        self.baudratelistctr=wx.Choice(panel, -1, (70, 320), choices=baudratelist)
-        self.Bind(wx.EVT_CHOICE,self.OnbaudrateCH,self.baudratelistctr)#波特率下拉列表响应函数
-        self.comlistctr=wx.Choice(panel, -1, (70, 350), choices=comlist)
-        self.Bind(wx.EVT_CHOICE,self.OncomlistCH,self.comlistctr)#com下拉列表响应函数
-        self.baudratelistctr.SetSelection(11)
-        self.comlistctr.SetSelection(0)
-        self.sendctr = wx.TextCtrl(panel, -1,              
-                    pos = (100, 50), size = (200, 100),
-                    style=wx.TE_MULTILINE|wx.TE_CENTER)
-        self.recctr = wx.TextCtrl(panel, -1,              
-                    pos = (100, 200), size = (300, 100),
-                    style=wx.TE_MULTILINE|wx.TE_CENTER)
-        
-        self.sendbutton=wx.Button(panel,-1,u'发送',pos=(350,50))#发送按钮
-        self.Bind(wx.EVT_BUTTON,self.OnSend,self.sendbutton)
-        self.ClearRecbutton=wx.Button(panel,-1,u'清空接收列表',pos=(350,200))
-        self.Bind(wx.EVT_BUTTON,self.OnClearRec,self.ClearRecbutton)
-       
-        index=self.baudratelistctr.GetSelection()
-        BaudRate=self.baudratelistctr.GetString(index)#获取波特率
-        index=self.comlistctr.GetSelection()
-        #index = 1
-        ComNum=self.comlistctr.GetString(index)#获取com口
-        t = threading.Timer(0.1,self.myreceive)
-        t.start()
-        self.Centre()
-        global mycom
-    
-        try:  
-            mycom= serial.Serial(ComNum,BaudRate,timeout=1)
-                
-        except:
-            wx.MessageBox('open com fail','error')
-            return None
-    
-    '''
 
     def switch_btn_click(self, event):
         # 打开串口

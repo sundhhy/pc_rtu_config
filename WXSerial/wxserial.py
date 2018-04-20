@@ -29,7 +29,7 @@ class SerialFrameUI ( wx.Frame ):
 		wx.Frame.__init__ ( self, parent, id = wx.ID_ANY, title = wx.EmptyString, pos = wx.DefaultPosition, size = wx.Size( 574,456 ), style = wx.DEFAULT_FRAME_STYLE|wx.TAB_TRAVERSAL )
 		
 		self.SetSizeHints( wx.DefaultSize, wx.DefaultSize )
-		self.SetForegroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_INFOBK ) )
+		self.SetForegroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_INFOBK) ) #
 		self.SetBackgroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_WINDOWFRAME ) )
 		
 		bSizer1 = wx.BoxSizer( wx.VERTICAL )
@@ -196,25 +196,26 @@ class SerialFrameUI ( wx.Frame ):
 from serial import Serial
 from wx.lib.pubsub import setupkwargs
 from wx.lib.pubsub import pub
-
+import threading
 
 class SerialFrame(SerialFrameUI):
 	def __init__(self,parent=None):
 		super(SerialFrame,self).__init__(parent)
 
 		self.m_imgStat.SetBitmap(Img_inclosing.getBitmap())
-
+		self.ser_lock = threading.Lock()
 		self.Ser = Serial()
-		self.serialThread = SerialThread(self.Ser)
+		self.serialThread = SerialThread(self.Ser, self.ser_lock)
 		#create a pubsub receiver
 		#sdh
 		pub.subscribe(self.on_txtMain_update,'update')
         
 	def on_txtMain_update(self, msg):
-		self.m_txtMain.AppendText('[rx]' + msg + '\n')
+		self.m_txtMain.AppendText('[rx]' + msg.decode() + '\n')
 
 	def on_btnSend_clicked( self, event ):
-		self.Ser.write(bytes(self.m_txtInput.GetValue(), encoding = "utf8") )
+		if self.Ser.is_open:
+			self.Ser.write(bytes(self.m_txtInput.GetValue(), encoding = "utf8") )
 
 	def on_btnClear_clicked( self, event ):
 		self.m_txtMain.Clear()
@@ -229,32 +230,32 @@ class SerialFrame(SerialFrameUI):
 		self.m_txtMain.SetValue(s)
 
 	def on_cmbBaud_changled( self, event):
-		print('fuck')
 		baud = int(self.m_cmbBaud.GetValue())
 		print(baud)
 		#self.Ser.setBaudrate(int(self.m_cmbBaud.GetValue()))
 		self.Ser.baudrate = baud
 
 	def on_btnOpen_clicked( self, event ):
-		if not self.Ser.isOpen():
-			try:
-				self.Ser.timeout = 1
-				self.Ser.xonxoff = 0
-				self.Ser.port = self.m_cmbCOMX.GetValue()
-				self.Ser.parity = self.m_cmbChek.GetValue()[0]
-				self.Ser.baudrate = int(self.m_cmbBaud.GetValue())
-				self.Ser.bytesize = int(self.m_cmbData.GetValue())
-				self.Ser.stopbits = int(self.m_cmbStop.GetValue())
-				self.Ser.open()
-				self.m_btnOpen.SetLabel(u'关闭串口')
-			except Exception as e:
-				print('COMM Open Fail!!',e)
-		else:
-			self.m_btnOpen.SetLabel(u'打开串口')
-			self.m_imgStat.SetBitmap(Img_inopening.getBitmap())
-		#else:
-			self.Ser.close()
-			while self.Ser.isOpen(): pass
+		with self.ser_lock:
+			if not self.Ser.isOpen():
+				try:
+					self.Ser.timeout = 1
+					self.Ser.xonxoff = 0
+					self.Ser.port = self.m_cmbCOMX.GetValue()
+					self.Ser.parity = self.m_cmbChek.GetValue()[0]
+					self.Ser.baudrate = int(self.m_cmbBaud.GetValue())
+					self.Ser.bytesize = int(self.m_cmbData.GetValue())
+					self.Ser.stopbits = int(self.m_cmbStop.GetValue())
+					self.Ser.open()
+					self.m_btnOpen.SetLabel(u'关闭串口')
+				except Exception as e:
+					print('COMM Open Fail!!',e)
+			else:
+				self.m_btnOpen.SetLabel(u'打开串口')
+				self.m_imgStat.SetBitmap(Img_inopening.getBitmap())
+			#else:
+				self.Ser.close()
+				while self.Ser.isOpen(): pass
 
 
 		self.m_imgStat.SetBitmap(Img_inclosing.getBitmap())
@@ -267,26 +268,27 @@ class SerialFrame(SerialFrameUI):
 
 
 import time
-import threading
+
 
 
 class SerialThread(threading.Thread):
-	def __init__(self,Ser):
+	def __init__(self,Ser, lock):
 		super(SerialThread,self).__init__()
 
 		self.Ser=Ser
-
+		self.lock = lock
 		self.start()
 
 	def run(self):
 		while True:
-			if self.Ser.isOpen() and self.Ser.inWaiting():
-				text = self.Ser.read(self.Ser.inWaiting()).decode()
-				print(text)
-				#wx.CallAfter(pub.sendMessage('update',msg=text))
-				pub.sendMessage('update', msg=text)
+			with self.lock:
+				if self.Ser.isOpen() and self.Ser.inWaiting():
+					text = self.Ser.read(self.Ser.inWaiting())
+					#print(text)
+					#wx.CallAfter(pub.sendMessage('update',msg=text))
+					pub.sendMessage('update', msg=text)
 
-		time.sleep(0.01)
+				time.sleep(0.01)
                             
 
 
