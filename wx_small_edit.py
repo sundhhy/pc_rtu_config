@@ -1,3 +1,7 @@
+# -*- coding: utf-8 -*-
+"""
+http://blog.csdn.net/chenghit
+"""
 import wx
 import os
 
@@ -16,17 +20,17 @@ class MainWindow(wx.Frame):
         filemenu = wx.Menu()
 
         # wx.ID_ABOUT和wx.ID_EXIT是wxWidgets提供的标准ID
-        menuOpen = filemenu.Append(wx.ID_OPEN, "Open", " Open a file")
-        menuAbout = filemenu.Append(wx.ID_ABOUT, "About", \
+        menuOpen = filemenu.Append(wx.ID_OPEN, "&Open", " Open a file")
+        menuAbout = filemenu.Append(wx.ID_ABOUT, "&About", \
             " Information about this program")    # (ID, 项目名称, 状态栏信息)
         filemenu.AppendSeparator()
-        menuExit = filemenu.Append(wx.ID_EXIT, "Exit", \
+        menuExit = filemenu.Append(wx.ID_EXIT, "E&xit", \
             " Terminate the program")    # (ID, 项目名称, 状态栏信息)
 
         # 创建菜单栏
         menuBar = wx.MenuBar()
-        menuBar.Append(filemenu, "File")    # 在菜单栏中添加filemenu菜单
-        self.SetMenuBar(menuBar)    # 在frame中添加菜单栏
+        menuBar.Append(filemenu, "&File")  # 在菜单栏中添加filemenu菜单
+        self.SetMenuBar(menuBar)  # 在frame中添加菜单栏
 
         # 设置events
         self.Bind(wx.EVT_MENU, self.OnOpen, menuOpen)
@@ -52,13 +56,13 @@ class MainWindow(wx.Frame):
 
     def OnAbout(self, e):
         # 创建一个带"OK"按钮的对话框。wx.OK是wxWidgets提供的标准ID
-        dlg = wx.MessageDialog(self, "A small text editor.", \
-            "About Sample Editor", wx.OK)    # 语法是(self, 内容, 标题, ID)
-        dlg.ShowModal()    # 显示对话框
-        dlg.Destroy()    # 当结束之后关闭对话框
+        dlg = wx.MessageDialog(self, "A small text editor.",
+                               "About Sample Editor", wx.OK)  # 语法是(self, 内容, 标题, ID)
+        dlg.ShowModal()  # 显示对话框
+        dlg.Destroy()  # 当结束之后关闭对话框
 
     def OnExit(self, e):
-        self.Close(True)    # 关闭整个frame
+        self.Close(True)  # 关闭整个frame
 
     def OnOpen(self, e):
         """ open a file. """
@@ -69,11 +73,12 @@ class MainWindow(wx.Frame):
         if dlg.ShowModal() == wx.ID_OK:
             self.filename = dlg.GetFilename()
             self.dirname = dlg.GetDirectory()
-            f = open(os.path.join(self.dirname, self.filename), 'r') # 暂时只读
+            f = open(os.path.join(self.dirname, self.filename), 'r')  # 暂时只读
             self.control.SetValue(f.read())
             f.close()
         dlg.Destroy()
 
 app = wx.App(False)
-frame = MainWindow(None, title = "Small editor")
+frame = MainWindow(None, title="Small editor")
 app.MainLoop()
+
