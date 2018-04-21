@@ -33,12 +33,14 @@ class main_app(wx.App):  # 自定义应用程序对象
 
         if type == 0:
             print('recv {}'.format(msg))
-            self.frame.recctr.AppendText('[rx] ' + msg.decode() + '\n')
+            self.frame.recv_bytes(msg)
             return
 
         if type == 1:
             self.frame = Get_frame(msg)
             return
+
+        pass
 
     def OnExit(self):
         print("main_app OnExit")

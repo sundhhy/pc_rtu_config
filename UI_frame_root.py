@@ -19,7 +19,18 @@ from rtu_conf.CMM_serial import *
 
 
 class Frame_root(wx.Frame):
+    _instance = None
+    __first_init = True
+    def __new__(cls, *args, **kw):
+        if not cls._instance:
+            cls._instance = super(Frame_root, cls).__new__(cls, *args, **kw)
+        return cls._instance
     def __init__(self, parent):
+
+        if not self.__first_init:
+            return
+
+        self.__first_init = False
 
         self.ser_state = 0
         self.com = cmm_manager()
@@ -80,7 +91,8 @@ class Frame_root(wx.Frame):
         self.com.start_thread()
 
 
-
+    def recv_bytes(self, data):
+        self.recctr.AppendText('[rx] ' + data.decode() + '\n')
 
     def switch_btn_click(self, event):
         # 打开串口
