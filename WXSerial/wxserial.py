@@ -93,7 +93,7 @@ class SerialFrameUI ( wx.Frame ):
 		bSizer4.Add( self.m_btnOpen, 8, wx.ALL, 5 )
 		
 		
-		#bSizer4.AddSpacer( (0, 0), 1, wx.EXPAND, 5 )
+		bSizer4.Add( (0, 0), 1, wx.EXPAND, 5 )
 		#bSizer4.Add((10, 10), (0, 0))
 		
 		self.m_imgStat = wx.StaticBitmap( self, wx.ID_ANY, wx.ArtProvider.GetBitmap( wx.ART_HELP, wx.ART_BUTTON ), wx.DefaultPosition, wx.DefaultSize, 0 )
@@ -149,7 +149,7 @@ class SerialFrameUI ( wx.Frame ):
 		bSizer5.Add( self.m_btnExtn, 0, wx.ALL, 5 )
 		
 		
-		#bSizer5.AddSpacer( ( 10, 0), 1, wx.EXPAND, 5 )
+		bSizer5.Add( ( 10, 0), 1, wx.EXPAND, 5 )
 		
 		
 		bSizer1.Add( bSizer5, 0, wx.EXPAND, 5 )

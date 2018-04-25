@@ -8,7 +8,7 @@ from rtu_conf.exchange import *
 
 from rtu_conf.UI_frame_factory import *
 
-
+from rtu_conf.UI_frame_top import *
 
 
 
@@ -18,7 +18,9 @@ class main_app(wx.App):  # 自定义应用程序对象
 
     def OnInit(self):
         print("main_app OnInit")
-        self.frame = Get_frame(FRAME_ROOT)
+
+        self.frame = Frame_top()
+
         self.exchange = get_exchange('cmm')
         self.exchange.attach(self)
         id = self.frame.GetId()
@@ -28,17 +30,20 @@ class main_app(wx.App):  # 自定义应用程序对象
 
     #使用send名字是因为exchanger的task接口必须是send
     def send(self, type, msg):
-
-
-
-        if type == 0:
+        if type == EXC_TYPE_COM:
             print('recv {}'.format(msg))
             self.frame.recv_bytes(msg)
             return
 
-        if type == 1:
+        '''
+         if type == 1:
+            print('root change frame')
+            self.frame.Show(False)
             self.frame = Get_frame(msg)
+            self.frame.Show(True)
             return
+        '''
+
 
         pass
 

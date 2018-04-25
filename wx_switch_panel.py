@@ -11,6 +11,14 @@ class PanelOne(wx.Panel):
         wx.Panel.__init__(self, parent=parent)
         txt = wx.TextCtrl(self)
 
+        self.m_button2 = wx.Button(self, wx.ID_ANY, u"读取", (0, 60), wx.DefaultSize, 0)
+        self.Bind(wx.EVT_BUTTON, self.read_id, self.m_button2)
+
+    def read_id(self, event):
+        print('PanelOne read_id')
+
+
+
 ########################################################################
 class PanelTwo(wx.Panel):
     """"""
@@ -21,11 +29,21 @@ class PanelTwo(wx.Panel):
         wx.Panel.__init__(self, parent=parent)
 
         grid = gridlib.Grid(self)
-        grid.CreateGrid(25,12)
+        grid.CreateGrid(4,4)
 
         sizer = wx.BoxSizer(wx.VERTICAL)
+
+        self.m_button2 = wx.Button(self, wx.ID_ANY, u"读取", (0, 80), wx.DefaultSize, 0)
+
         sizer.Add(grid, 0, wx.EXPAND)
+        sizer.Add(self.m_button2 , 0, wx.EXPAND)
         self.SetSizer(sizer)
+
+
+        self.Bind(wx.EVT_BUTTON, self.read_id, self.m_button2)
+
+    def read_id(self, event):
+        print('PanelTwo read_id')
 
 ########################################################################
 class MyForm(wx.Frame):

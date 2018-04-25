@@ -7,6 +7,8 @@
 from contextlib import contextmanager
 from collections import defaultdict
 
+EXC_TYPE_COM    = 0
+
 class Exchange:
     def __init__(self):
         self._subscribers = set()

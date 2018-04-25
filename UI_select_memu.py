@@ -51,9 +51,9 @@ class Select_item:
         f = UI_frame_factory.Get_frame(frame_id)
 
         if f:
-            self.parent_ui.Show(False)
+            #self.parent_ui.Show(False)
             self.exchange.send(1, frame_id)
-            f.Show()
+            #f.Show()
 
 
     def on_modbus(self, e):
@@ -65,7 +65,7 @@ class Select_item:
         dlg.ShowModal()    # 显示对话框
         dlg.Destroy()    # 当结束之后关闭对话框
         '''
-        self.switch_frame(UI_frame_factory.FRAME_MODBUS)
+        self.parent_ui.switch_hmi(UI_frame_factory.FRAME_MODBUS)
 
     def on_return(self, e):
         # 创建一个带"OK"按钮的对话框。wx.OK是wxWidgets提供的标准ID
@@ -79,7 +79,7 @@ class Select_item:
         :param e:
         :return:
         '''
-        self.switch_frame(UI_frame_factory.FRAME_ROOT)
+        self.parent_ui.switch_hmi(UI_frame_factory.FRAME_ROOT)
 
 
 

@@ -78,7 +78,7 @@ class cmm_manager(threading.Thread):
             with self.ser_lock:
                 if self.Ser.isOpen() and self.Ser.inWaiting():
                     text = self.Ser.read(self.Ser.inWaiting())
-                    self.exchange.send(msg=text)
+                    self.exchange.send(EXC_TYPE_COM, msg=text)
             time.sleep(0.01)
 
         print("{} thread exit!".format(CMM_PRIEX))
