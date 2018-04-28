@@ -1,2 +1,0 @@
-FRAME_ROOT     = 0
-FRAME_MODBUS    = 1

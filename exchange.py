@@ -28,9 +28,9 @@ class Exchange:
             for task in tasks:
                 self.detach(task)
 
-    def send(self, type=0, msg=None):
+    def send(self, exc_type=0, msg=None):
         for subcriber in self._subscribers:
-            subcriber.send(type, msg)
+            subcriber.send(exc_type, msg)
 
 
 _exchanges = defaultdict(Exchange)
