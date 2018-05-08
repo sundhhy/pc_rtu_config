@@ -7,7 +7,8 @@ def swap_bytes(word_val):
     """swap lsb and msb of a word"""
     msb = (word_val >> 8) & 0xFF
     lsb = word_val & 0xFF
-    return (lsb << 8) + msb
+    crc = (lsb << 8) + msb
+    return crc
 
 def calculate_crc(data):
     """Calculate the CRC16 of a datagram"""

@@ -77,9 +77,10 @@ class Panel_home(wx.Panel):
 
         self.com.start_thread()
 
+    def enter(self):
+        self.com.start_thread()
 
-
-    def update(self, data):
+    def update(self, data_item=None, data=None):
         self.txt_serial_data.AppendText('[rx] ' + data.decode() + '\n')
 
     def switch_btn_click(self, event):

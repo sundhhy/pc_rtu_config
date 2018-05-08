@@ -20,17 +20,17 @@ from rtu_conf.CMM_serial import *
 from UI.panel_home import *
 from UI.panel_modbus import *
 from UI.select_memu import *
-from rtu_conf.Model.rtu_cfg import *
 
 
 
 class Frame_top(wx.Frame):
-    def __init__(self):
+    def __init__(self, control):
         wx.Frame.__init__(self, None, wx.ID_ANY,
                           "Panel Switcher Tutorial")
         self.select_nemu = Select_item(self)
         self.com = cmm_manager()
-        rtu_cfg.set_com(self.com)
+        self.control = control
+        self.control.set_com(self.com)
         self.panel_home = Panel_home(self)
         self.panel_modbus = Panel_modbus(self)
 
@@ -52,7 +52,7 @@ class Frame_top(wx.Frame):
             self.panel_home.Show()
             self.cur_panel = self.panel_home
 
-        if id == HMI_MODBUS:
+        elif id == HMI_MODBUS:
             if not self.com.Ser.is_open:
                 dlg = wx.MessageDialog(self, "请先打开串口.", "错误", wx.OK)  # 语法是(self, 内容, 标题, ID)
                 dlg.ShowModal()  # 显示对话框
@@ -61,11 +61,19 @@ class Frame_top(wx.Frame):
             self.panel_home.Hide()
             self.panel_modbus.Show()
             self.cur_panel = self.panel_modbus
+        else:
+            return
+
+        self.cur_panel.enter()
+        self.update = self.cur_panel.update
 
         self.Layout()
 
-    def recv_bytes(self, data):
-        self.cur_panel.update(data)
+    def recv_bytes(self, pkt):
+        if self.panel_home.IsShown():
+            self.cur_panel.update(data=pkt)
+
+
 
     def exit(self):
         self.panel_home.exit()

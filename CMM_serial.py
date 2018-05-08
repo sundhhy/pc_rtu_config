@@ -55,11 +55,63 @@ class cmm_manager(threading.Thread):
             print('{} set_baud {}'.format(CMM_PRIEX, baud))
             self.Ser.baudrate = baud
 
+    def set_timeout(self, time_sec):
+        self.Ser.timeout = time_sec
+
+    def read_frame(self, time_out_s, frame_len):
+        self.Ser.timeout = time_out_s
+        return self.Ser.readline()
+
+        '''
+        response = bytearray("", 'ascii')
+        while True:
+            self.Ser.timeout = time_out_s
+            read_bytes = self.Ser.read(1)
+            if not read_bytes:
+                break
+            response += read_bytes
+        return response
+
+
+        '''
+
+
+
+
+
+    def _recv(self, expected_length=-1):
+        """Receive the response from the slave"""
+        response = utils.to_data("")
+        while True:
+            read_bytes = self._serial.read(expected_length if expected_length > 0 else 1)
+            if not read_bytes:
+                break
+            response += read_bytes
+            if expected_length >= 0 and len(response) >= expected_length:
+                #if the expected number of byte is received consider that the response is done
+                #improve performance by avoiding end-of-response detection by timeout
+                break
+
+        retval = call_hooks("modbus_rtu.RtuMaster.after_recv", (self, response))
+        if retval is not None:
+            return retval
+        return response
+
+
+
+
     def change_port(self, name):
         print('{} change_port {}'.format(CMM_PRIEX, name))
 
     def start_thread(self):
         print('{} start_thread'.format(CMM_PRIEX))
+        if self._running:
+            self.start()
+            return
+
+        #要重新创建线程在启动
+        self._running = True
+        super(cmm_manager, self).__init__()
         self.start()
 
     def exit(self):

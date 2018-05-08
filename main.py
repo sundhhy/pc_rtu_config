@@ -7,6 +7,7 @@ from rtu_conf.CMM_serial import *
 from rtu_conf.exchange import *
 
 from rtu_conf.UI.frame_top import *
+from rtu_conf.control.control import *
 
 
 
@@ -17,7 +18,9 @@ class main_app(wx.App):  # 自定义应用程序对象
     def OnInit(self):
         print("main_app OnInit")
 
-        self.frame = Frame_top()
+        self.control = Control()
+        self.frame = Frame_top(self.control)
+        self.control.set_view(self.frame)
 
         self.exchange = get_exchange('cmm')
         self.exchange.attach(self)
